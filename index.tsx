@@ -29,10 +29,9 @@ function createFieldComponent<T extends Values>(form: Form<T>) {
         K extends keyof T,
         TStateValue extends T[K],
         TInputValue extends any,
-        Props extends FieldProps<K, TStateValue, TInputValue>,
-    >({ name, toValue, fromValue, children }: Props) => {
+    >({ name, toValue, fromValue, children }: FieldProps<K, TStateValue, TInputValue>) => {
         const value = form.values[name]
-        const transformedValue = toValue ? toValue(value) : value
+        const transformedValue = toValue ? toValue(value) : value as TInputValue
         const onChange = (value: TInputValue) => {
             form.values[name] = fromValue ? fromValue(value) : value as T[K]
         }
@@ -55,18 +54,16 @@ const form: Form<FormData> = {
 
 const Field = createFieldComponent(form)
 
-// props is `any`, but must be `InputProps<number>`
-// because the `toValue` function is not specified
-const a = <Field name='age'>{props => <input />}</Field>
+// props is `InputProps<number>`. Nice!
+const a = <Field name='age' children={props => <input />} />
 
-// props is `any`, but must be `InputProps<string>`
+// props is `any` 😔, but must be `InputProps<string>`
 // because the return type of the `toValue` function is a string
 const b = (
     <Field
         name='age'
         toValue={value => value.toString()}
         fromValue={value => Number(value)}
-    >
-        {props => <input />}
-    </Field>
+        children={props => <input />}
+    />
 )
