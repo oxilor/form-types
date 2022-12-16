@@ -36,7 +36,7 @@ function createFieldComponent<T extends Values>(form: Form<T>) {
         const onChange = (value: TInputValue) => {
             form.values[name] = fromValue ? fromValue(value) : value as T[K]
         }
-        return children({ value, onChange })
+        return children({ value: transformedValue, onChange })
     }
 }
 
